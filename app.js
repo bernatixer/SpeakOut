@@ -33,7 +33,7 @@ require('./routes')(app);
 
 // socket.io ===================================================================
 io.on('connection', function(socket){
-    console.log('a user connected');
+    //socket.join('some room');
     socket.on('create_chat', function(){
         var current_time = new Date();
         crypto.pbkdf2(current_time.getTime().toString(), 'salt', 100000, 4, 'sha256', (err, key) => {

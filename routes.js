@@ -7,28 +7,28 @@ module.exports = function(app) {
         res.render('index', { title: "SpeakOut" });
     });
 
-    app.get('/:name', function(req, res) {
-        var name = req.params.name;
-        db.findChatbyId(name, function (err, user) {
+    app.get('/:id', function(req, res) {
+        var id = req.params.id;
+        db.findChatById(id, function (err, exists, users, messages) {
             if (err) {
                 console.log("ERROR : ", err);
             } else {
-                if (user == null) {
-                    res.render('index', { num: 0 });
+                if (exists) {
+                    res.render('chat', { title: "Chat #"+id, id: id, users: users, messages: messages });
                 } else {
-                    res.render('index', { num: 0 });
+                    res.redirect('/');
                 }
             }
         });
     });
-
+    /*
     app.get('*', function(req, res) {
         if (typeof req.user !== 'undefined') {
             // User is logged in.
-            res.render('404', {logged: true, user: req.user});
+            res.render('404');
         } else {
-            res.render('404', {logged: false});
+            res.render('404');
         }
     });
-
+    */
 };

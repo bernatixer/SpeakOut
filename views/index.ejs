@@ -1,36 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title><%= title %></title>
+    <title><%= title %></title>
 
-	<link rel="stylesheet" type="text/css" href="../css/index.css">
-	<link rel="stylesheet" type="text/css" href="../css/materialize.css">
-	<link rel="stylesheet" type="text/css" href="../css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="../css/index.css">
+    <link rel="stylesheet" type="text/css" href="../css/materialize.css">
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome.css">
 
-	<script type="text/javascript" src="../js/jquery.min.js"></script>
-	<script type="text/javascript" src="../js/materialize.js"></script>
-	<script type="text/javascript" src="../js/speakout.js"></script>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/materialize.js"></script>
+    <script type="text/javascript" src="../js/speakout.js"></script>
 
 </head>
 <body style="margin: 0px;">
 
-	<div class="main-page" style="">
-		<div class="main-2">
-			<form>
-                <a type="submit" id="speakout" class="waves-effect waves-light btn btn-large purple darken-4" style="margin-top: 300px; width: 300px; height: 100px; line-height: 100px; font-size: 30px;">SpeakOut</a>
-            </form>
-		</div>
-	</div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        var socket = io();
-        $('form').submit(function(){
-            socket.emit('create_chat');
-            return false;
-        });
-        socket.on('chat_created', function(hash){
-            document.getElementById("speakout").innerHTML = hash;
-        });
-    </script>
+<div class="main-page" style="">
+    <div class="main-2">
+        <a id="speakout" class="waves-effect waves-light btn btn-large purple darken-4" style="margin-top: 300px; width: 300px; height: 100px; line-height: 100px; font-size: 30px;">SpeakOut</a>
+    </div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io();
+    $( "#speakout" ).click(function() {
+        socket.emit('create_chat');
+    });
+    socket.on('chat_created', function(hash){
+        document.getElementById("speakout").innerHTML = hash;
+    });
+</script>
 </body>
 </html>

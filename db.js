@@ -51,15 +51,19 @@ module.exports.setup = function() {
     });
 };
 
-module.exports.findChatById = function (hash, callback) {
+module.exports.findChatById = function (id, callback) {
     onConnect(function (err, connection) {
-        r.db(dbConfig['db']).table('chats').filter({ hash: hash}).count().run(connection, function(err, cursor) {
+        r.db(dbConfig['db']).table('chats').filter({ id: id}).limit(1).run(connection, function(err, cursor) {
             if(err) {
-                logerror("[ERROR][%s][findUser] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
-                callback(true, null);
-            }
-            else {
-                callback(false, cursor);
+                logerror("[ERROR][%s][findChatById] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
+                callback(true, false, null, null);
+            } else {
+                console.log(cursor.toArray());
+                if (cursor == null) {
+                    callback(false, false, null, null)
+                } else {
+                    callback(false, true, cursor['users'], cursor['messages']);
+                }
             }
             connection.close();
         });
