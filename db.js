@@ -73,10 +73,34 @@ module.exports.findChatById = function (id, callback) {
     });
 };
 
-module.exports.createChat = function (hash) {
+module.exports.findPassword = function (id, callback) {
+    onConnect(function (err, connection) {
+        r.db(dbConfig['db']).table('chats').filter({ hash: id}).limit(1).run(connection, function(err, cursor) {
+            if(err) {
+                logerror("[ERROR][%s][findChatById] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
+                callback(true, false, null);
+            } else {
+
+                cursor.next(function (err, row) {
+                    if(err) {
+                        logerror("[ERROR][%s][findChatById] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
+                        callback(false, false, null); // no user, cursor is empty
+                    } else {
+                        callback(false, true, row);
+                    }
+                    connection.close();
+                });
+            }
+        });
+    });
+};
+
+module.exports.createChat = function (hash, private, password) {
     onConnect(function (err, connection) {
         r.db(dbConfig['db']).table('chats').insert({
             "hash": hash,
+            "private": private,
+            "password": password,
             "users": [],
             "messages": []
         }).run(connection, function() {

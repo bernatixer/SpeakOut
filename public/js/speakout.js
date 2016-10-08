@@ -1,23 +1,66 @@
-/*$(document).ready(function(){
+$(document).ready(function(){
 		
 	$('#speakout').click(choose_room);
-	$('#speakpublic').click(public);
-	$('#speakprivate').click(private);
+	$('#speakout_00').click(public);
+	$('#speakout_01').click(private);
+
+	$('#reselect-room').click(reselectroom);
 
 });
 
 function choose_room(){
 
-	$form = $('#speakout').parent();
-	$form.empty();
-	$form.insertAfter('<a id="speakpublic" class="waves-effect waves-light btn btn-large purple darken-4" style="margin-top: 300px; width: 300px; height: 50px; line-height: 50px; font-size: 25px;"><span class="fa fa-users"></span>&nbsp; Public Room</a><br>');
-	$form.insertAfter('<a id="speakprivate" class="waves-effect waves-light btn btn-large purple darken-4" style="margin-top: 3px; width: 300px; height: 50px; line-height: 50px; font-size: 25px;"><span class="fa fa-lock"></span>&nbsp; Private Room</a>');
+	$('#speakout').fadeOut( '100' , function(){
+		$('#speakout').addClass('hidden');
+		$('#choose_room').removeClass('hidden');
+		
+	} );
+	
 }
 
 function public(){
 	console.log('public');
+	$('#choose_room').fadeOut('200',function(){
+		$('#choose_room').addClass('hidden');
+		$('#p_room').removeClass('hidden');
+
+		$('#reselect-room').removeClass('hidden');
+		$('#reselect-room').fadeIn('200');
+	});
 }
 
 function private(){
 	console.log('private');
-}*/
+	$('#choose_room').fadeOut('200',function(){
+		$('#choose_room').addClass('hidden');
+		$('#pr_room').removeClass('hidden');
+
+		$('#reselect-room').removeClass('hidden');
+		$('#reselect-room').fadeIn('200');
+	});
+}
+
+function reselectroom(){
+
+	$('#reselect-room').fadeOut('100',function(){
+		$('#pr_room').addClass('hidden');
+		$('#p_room').addClass('hidden');
+
+		$('#choose_room').removeClass('hidden');
+
+		$('#choose_room').fadeIn('200');
+
+		
+	});
+	
+	
+}
+
+function get_url() {
+
+	$('#pr_room').fadeOut('100',function() {
+		$('#pr_room').addClass('hidden');
+		$('#reselect-room').addClass('hidden');
+        $('#p_room').removeClass('hidden');
+	});
+}

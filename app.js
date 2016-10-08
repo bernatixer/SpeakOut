@@ -33,30 +33,28 @@ require('./routes')(app);
 
 // socket.io ===================================================================
 io.on('connection', function(socket){
-    //socket.join('some room');
-    var id_room;
-    socket.on('create_chat', function(){
+    var u_info = [];
+    socket.on('create_chat', function(private, password){
         var current_time = new Date();
         crypto.pbkdf2(current_time.getTime().toString(), 'salt', 100000, 4, 'sha256', (err, key) => {
             if (err) throw err;
             var hash = key.toString('hex');
-            db.createChat(hash);
+            db.createChat(hash, private, password);
             socket.emit('chat_created', hash);
         });
     });
     socket.on('im_here', function(hash){
-        //db.addUserToRoom(hash, socket.id);
-        //
-        // ROOMS SOCKET.IO
-        //
-        id_room = hash;
-        socket.join(id_room);
+        socket.join(hash);
     });
-    socket.on('send_message', function(msg){
-        socket.broadcast.to(id_room).emit('receive_msg', msg);
+    socket.on('send_message', function(msg, hash){
+        var nick = u_info[hash];
+        socket.broadcast.to(hash).emit('receive_msg', msg, nick);
+        // AFEGIR MISSATGE A LA DB (Amb timestamp)
     });
-    socket.on('disconnect', function () {
-        socket.leave(id_room);
+    socket.on('nickname', function(nick, hash){
+        u_info[hash] = nick;
+        // AFEGIR USUARI A LA DB
+        // Descarregar missatges de la DB (Per ordre de 'timestamp')
     });
 });
 
