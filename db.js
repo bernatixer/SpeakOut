@@ -56,16 +56,26 @@ module.exports.findChatById = function (id, callback) {
         r.db(dbConfig['db']).table('chats').filter({ id: id}).limit(1).run(connection, function(err, cursor) {
             if(err) {
                 logerror("[ERROR][%s][findChatById] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
-                callback(true, false, null, null);
+                callback(true, false, null);
             } else {
-                console.log(cursor.toArray());
-                if (cursor == null) {
-                    callback(false, false, null, null)
+
+                cursor.next(function (err, row) {
+                    if(err) {
+                        logerror("[ERROR][%s][findChatById] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
+                        callback(false, false, null); // no user, cursor is empty
+                    } else {
+                        callback(false, true, row);
+                    }
+                    connection.close();
+                });
+                /*
+                if (!cursor) {
+                    callback(false, false, null);
                 } else {
-                    callback(false, true, cursor['users'], cursor['messages']);
-                }
+                    callback(false, true, cursor);
+                }*/
             }
-            connection.close();
+            //connection.close();
         });
     });
 };
