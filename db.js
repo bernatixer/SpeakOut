@@ -66,6 +66,18 @@ module.exports.findChatById = function (hash, callback) {
     });
 };
 
+module.exports.createChat = function (hash) {
+    onConnect(function (err, connection) {
+        r.db(dbConfig['db']).table('chats').insert({
+            "id": hash,
+            "users": [],
+            "messages": []
+        }).run(connection, function() {
+            connection.close();
+        });
+    });
+};
+
 function onConnect(callback) {
     r.connect({host: dbConfig.host, port: dbConfig.port }, function(err, connection) {
         assert.ok(err === null, err);

@@ -1,15 +1,10 @@
 var flash = require('connect-flash')
     , db = require('./db');
-const crypto = require('crypto');
 
 module.exports = function(app) {
 
     app.get('/', function(req, res) {
-        var current_time = new Date();
-        crypto.pbkdf2(current_time.getTime().toString(), 'salt', 100000, 4, 'sha512', (err, key) => {
-            if (err) throw err;
-            res.render('index', { title: key.toString('hex') });
-        });
+        res.render('index', { title: 0 });
     });
 
     app.get('/:name', function(req, res) {

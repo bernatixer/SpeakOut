@@ -6,8 +6,22 @@
   </head>
   <body>
     <h1><%= title %></h1>
-    <form method="post" action="#">
-
+    <form action="">
+        <button id="m">Send</button>
     </form>
   </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+  <script>
+      var socket = io();
+      $('form').submit(function(){
+          socket.emit('create_chat');
+          $('#m').val('');
+          return false;
+      });
+      socket.on('chat_created', function(hash){
+          document.getElementById("m").innerHTML = hash;
+          //$('#m').val(hash);
+      });
+  </script>
 </html>

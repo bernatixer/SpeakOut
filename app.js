@@ -8,6 +8,7 @@ var express = require('express')
     , port = 80
     , chalk = require('chalk')
     , db = require('./db');
+const crypto = require('crypto');
 
 // optimization ================================================================
 var compress = require('compression');
@@ -29,6 +30,20 @@ db.setup();
 
 // routes ======================================================================
 require('./routes')(app);
+
+// socket.io ===================================================================
+io.on('connection', function(socket){
+    console.log('a user connected');
+    socket.on('create_chat', function(){
+        var current_time = new Date();
+        crypto.pbkdf2(current_time.getTime().toString(), 'salt', 100000, 4, 'sha256', (err, key) => {
+            if (err) throw err;
+            var hash = key.toString('hex');
+            db.createChat(hash);
+            io.emit('chat_created', hash);
+        });
+    });
+});
 
 // launch ======================================================================
 server.listen(port, function(){
