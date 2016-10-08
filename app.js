@@ -43,6 +43,12 @@ io.on('connection', function(socket){
             socket.emit('chat_created', hash);
         });
     });
+    socket.on('im_here', function(hash){
+        //
+        // ROOMS SOCKET.IO
+        //
+        db.addUserToRoom(hash, socket.id);
+    });
 });
 
 // launch ======================================================================

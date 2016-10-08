@@ -53,7 +53,7 @@ module.exports.setup = function() {
 
 module.exports.findChatById = function (id, callback) {
     onConnect(function (err, connection) {
-        r.db(dbConfig['db']).table('chats').filter({ id: id}).limit(1).run(connection, function(err, cursor) {
+        r.db(dbConfig['db']).table('chats').filter({ hash: id}).limit(1).run(connection, function(err, cursor) {
             if(err) {
                 logerror("[ERROR][%s][findChatById] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
                 callback(true, false, null);
@@ -68,14 +68,7 @@ module.exports.findChatById = function (id, callback) {
                     }
                     connection.close();
                 });
-                /*
-                if (!cursor) {
-                    callback(false, false, null);
-                } else {
-                    callback(false, true, cursor);
-                }*/
             }
-            //connection.close();
         });
     });
 };
@@ -83,11 +76,21 @@ module.exports.findChatById = function (id, callback) {
 module.exports.createChat = function (hash) {
     onConnect(function (err, connection) {
         r.db(dbConfig['db']).table('chats').insert({
-            "id": hash,
+            "hash": hash,
             "users": [],
             "messages": []
         }).run(connection, function() {
             connection.close();
+        });
+    });
+};
+
+module.exports.addUserToRoom = function (id, socket_id) {
+    onConnect(function (err, connection) {
+        findUUIDById(id, function(uuid) {
+            r.db(dbConfig['db']).table('chats').get(uuid).update({ users: r.row('users').append(socket_id) }).run(connection, function() {
+                connection.close();
+            });
         });
     });
 };
@@ -99,6 +102,29 @@ function onConnect(callback) {
         callback(err, connection);
     });
 }
+
+function findUUIDById(id, callback) {
+    onConnect(function (err, connection) {
+        r.db(dbConfig['db']).table('chats').filter({ hash: id}).run(connection, function(err, cursor) {
+            if(err) {
+                logerror("[ERROR][%s][findChatById] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
+                return null;
+            } else {
+                cursor.next(function (err, row) {
+                    if(err) {
+                        logerror("[ERROR][%s][findChatById] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
+                        callback(null);
+                        return null; // no user, cursor is empty
+                    } else {
+                        var uuid = row['id'];
+                        callback(uuid);
+                    }
+                    connection.close();
+                });
+            }
+        });
+    });
+};
 
 // #### Connection management
 //

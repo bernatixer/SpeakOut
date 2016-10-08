@@ -21,14 +21,9 @@ module.exports = function(app) {
             }
         });
     });
-    /*
+    
     app.get('*', function(req, res) {
-        if (typeof req.user !== 'undefined') {
-            // User is logged in.
-            res.render('404');
-        } else {
-            res.render('404');
-        }
+        res.render('404');
     });
-    */
+
 };

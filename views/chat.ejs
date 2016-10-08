@@ -22,7 +22,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
     var socket = io();
-    socket.emit('im_here', <%= id %>);
+    socket.emit('im_here', "<%= id %>");
 </script>
 </body>
 </html>
