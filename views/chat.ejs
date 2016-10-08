@@ -27,7 +27,7 @@
 <div id="chat_view" class="hidden row" style="margin: 0px;">
     <div class="col s9 chat-view">
 
-        <div class="row msg-view" style="margin: 0px;">
+        <div id="msg_view" class="row msg-view" style="margin: 0px; overflow-y: auto; height: 590px;">
             <table id="chat" class="striped"></table>
         </div>
         <div class="row msg-send" style="margin: 0px;">
@@ -63,13 +63,13 @@
         </div>
     </div>
 </div>
-
 <script src="/socket.io/socket.io.js"></script>
 <script>
     var socket = io();
     $( "#nickname" ).submit(function( event ) {
         $('#choose_nickname').addClass('hidden');
         $('#chat_view').removeClass('hidden');
+        set_scroll();
         socket.emit('nickname', $('#input_text').val(), "<%= id %>");
         event.preventDefault();
     });
@@ -83,6 +83,9 @@
     socket.on('receive_msg', function(msg, nick){
         $('#chat').append('<tr><td><div class="message">'+ '<p class="msg-from">'+nick+'<p>'+ '<p class="msg-body">'+msg+'</p>'+ '</div></td></tr>');
     });
+    function set_scroll() {
+        $('#msg_view').scrollTop($('#msg_view').prop("scrollHeight"));
+    }
 </script>
 </body>
 </html>
