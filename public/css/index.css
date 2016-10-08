@@ -1,0 +1,23 @@
+body{
+	background-color: rgba(255,255,255,0.6); 
+	background-image: url('../img/world-map.png');
+	background-repeat: no-repeat;
+	background-size: cover;
+
+	
+}
+
+.main-page{
+
+	margin: 0px;
+
+	width: auto;
+	height: inherit;
+
+	text-align: center;
+}
+
+.main-2{
+	width: auto;
+	height: auto;
+}

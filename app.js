@@ -40,7 +40,7 @@ io.on('connection', function(socket){
             if (err) throw err;
             var hash = key.toString('hex');
             db.createChat(hash);
-            io.emit('chat_created', hash);
+            socket.emit('chat_created', hash);
         });
     });
 });

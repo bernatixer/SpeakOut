@@ -4,7 +4,7 @@ var flash = require('connect-flash')
 module.exports = function(app) {
 
     app.get('/', function(req, res) {
-        res.render('index', { title: 0 });
+        res.render('index', { title: "SpeakOut" });
     });
 
     app.get('/:name', function(req, res) {
