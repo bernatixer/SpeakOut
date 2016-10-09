@@ -1,141 +1,150 @@
 body{
-	max-height: 650px;
+    max-height: 650px;
+}
+
+input#input_text {
+    text-align: center;
+    color: black;
+    font-weight: bold;
 }
 
 .main-page{
 
-	margin: 0px;
+    margin: 0px;
 
-	width: auto;
-	height: inherit;
+    width: auto;
+    height: inherit;
 
-	text-align: center;
+    text-align: center;
 }
 
 .speakout{
-	width: auto;
-	height: auto;
-	text-align: center;
+    width: auto;
+    height: auto;
+    text-align: center;
 
-	margin-top: 300px;
+    margin-top: 300px;
 }
 
 .hidden{
-	display: none !important;
+    display: none !important;
 }
 
 .users-list{
-	border-left-width: 5px;
-	border-right-width: 0px;
-	border-top-width: 0px;
-	border-bottom-width: 0px;
+    border-left-width: 5px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
 
-	border-radius: 0px;
-	border-color: #9575cd ;
-	border-style: solid;
+    border-radius: 0px;
+    border-color: #9575cd ;
+    border-style: solid;
 
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 
-	padding: 0px !important;
+    padding: 0px !important;
 
-	height: 660px;
-	position: static;
+    height: 660px;
+    position: static;
 }
 
 .u-list-header{
-	padding-top: 10px;
-	padding-left: 15px;
+    padding-top: 10px;
+    padding-left: 15px;
 }
 
 .u-list-body{
-	margin: 0px;
-	padding-left: 20px;
-	padding-top: 10px;
+    margin: 0px;
+    padding-left: 20px;
+    padding-top: 10px;
 
-	font-weight: bold;
-	font-family: Calibri;
+    font-weight: bold;
+    font-family: Calibri;
 }
 
 .chat-view{
 
-	height: 660px;
-	position: static;
+    height: 660px;
+    position: static;
 
-	padding: 0px !important;
+    padding: 0px !important;
 }
 
 .msg-view{
-	height: 585px;
+    height: 585px;
+    overflow-wrap: break-word;
 }
 
 .msg-send{
-	height: 30px;
+    height: 30px;
 
-	border-top-width: 5px;
-	border-bottom-width: 0px;
-	border-left-width: 0px;
-	border-right-width: 0px;
+    border-top-width: 5px;
+    border-bottom-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
 
-	border-style: solid;
-	border-radius: 0px;
-	border-color: #e0e0e0;
+    border-style: solid;
+    border-radius: 0px;
+    border-color: #e0e0e0;
 
-	padding-left: 20px;
+    padding-left: 20px;
 
-	padding-right: 20px !important; 
+    padding-right: 20px !important;
 }
 
 td{
-	padding: 5px !important;
+    padding: 5px !important;
 }
 
 .message{
-	border-radius: 3px;
-	background-color: rgba(0,0,0,0);
-	width: auto;
-	display: inline-block;
-	padding: 10px;
-	margin-right: 15px;
-	margin-left: 15px;
+    border-radius: 3px;
+    background-color: rgba(0,0,0,0);
+    width: auto;
+    display: inline-block;
+    padding: 10px;
+    margin-right: 15px;
+    margin-left: 15px;
 }
 
 .msg-from{
-	font-size: 12px;
-	margin: 0px;
+    font-size: 12px;
+    margin: 0px;
 }
 
 
 .msg-from::after{
-	content: ':';
+    content: ':';
 }
 
 .msg-body{
-	margin: 0px;
-	margin-left: 20px;
-	font-size: 20px;
+    margin: 0px;
+    margin-left: 20px;
+    font-size: 20px;
+    max-width: 750px;
+    height: auto;
+    overflow-wrap: break-word;
 }
 
 .message-mine{
-	border-radius: 3px;
-	background-color: rgba(0,0,0,0);
-	width: auto;
-	display: inline-block;
-	padding: 10px;
-	margin-right: 15px;
-	margin-left: 70%;
+    border-radius: 3px;
+    background-color: rgba(0,0,0,0);
+    display: inline-block;
+    padding: 10px;
+    margin-right: 15px;
+    position: right;
 }
 
 .choose-nickname{
-	background-color: rgba(255,255,255,0.6); 
-	background-image: url('../img/world-map.png');
-	background-repeat: no-repeat;
-	background-size: cover;
-	
+    background-color: rgba(255,255,255,0.6);
+    background-image: url('../img/world-map.png');
+    background-repeat: no-repeat;
+    background-size: cover;
 
+    height: 660px;
 }
 
 .form-nickname{
-	padding-top: 300px;
-	padding-bottom: 260px;
-	width: 50%;
+    padding-top: 300px;
+    padding-bottom: 260px;
+    width: 50%;
 }

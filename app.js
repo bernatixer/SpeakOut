@@ -36,10 +36,11 @@ require('./routes')(app);
 io.on('connection', function(socket){
     // var que emmagatzema l'info de l'usuari
     var u_info = [];
+    var u_hash;
     // s'executa quan creem un chat nou
     socket.on('create_chat', function(private, password){
         var current_time = new Date();
-        // funció per crear el hash (url) de la pagina del chat
+        // funció per ºcrear el hash (url) de la pagina del chat
         crypto.pbkdf2(current_time.getTime().toString(), 'salt', 100000, 4, 'sha256', (err, key) => {
             if (err) throw err;
             var hash = key.toString('hex');
@@ -52,22 +53,36 @@ io.on('connection', function(socket){
     // s'executa quan l'usuaria s'afageix a la nova sala creada
     socket.on('im_here', function(hash){
         // afageix el nou usuari referenciat pel socket a la room referenciada pel hash (url)
+        u_hash = hash;
         socket.join(hash);
     });
     // s'executa quan s'envia un missatge
-    socket.on('send_message', function(msg, hash){
+    socket.on('send_message', function(msg){
         // variable nick que conté el nom de l'usuari en la room referenciada pel hash (url)
-        var nick = u_info[hash];
+        var nick = u_info[u_hash];
         // broadcast del missatge envait per "nick" a tots els usuaris connectats a la room (hash - url)
-        socket.broadcast.to(hash).emit('receive_msg', msg, nick);
-        // AFEGIR MISSATGE A LA DB (Amb timestamp)
+        socket.broadcast.to(u_hash).emit('receive_msg', msg, nick);
+        // TODO AFEGIR MISSATGE A LA DB (Amb timestamp)
     });
     // s'executa quan l'usuari obté un nickname nou
-    socket.on('nickname', function(nick, hash){
-        // ACTUALITZAR LA LLISTA D'USUARIS
-        u_info[hash] = nick;
-        // AFEGIR USUARI A LA DB
-        // Descarregar missatges de la DB (Per ordre de 'timestamp')
+    socket.on('nickname', function(nick){
+        u_info[u_hash] = nick;
+        db.addUserToRoom(u_hash, nick, function(users){
+            var users_pul = users['users'];
+            users_pul.push(nick);
+            socket.broadcast.to(u_hash).emit('update_users', users_pul);
+            socket.emit('update_users', users_pul);
+        });
+        // TODO Descarregar missatges de la DB (Per ordre de 'timestamp')
+    });
+    socket.on('disconnect', function (){
+        if (u_hash != null && u_info[u_hash] != null) {
+            db.removeUserFromRoom(u_hash, u_info[u_hash], function(new_users){
+                socket.broadcast.to(u_hash).emit('update_users', new_users);
+                socket.emit('update_users', new_users);
+            });
+
+        }
     });
 });
 

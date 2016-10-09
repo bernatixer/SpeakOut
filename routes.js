@@ -9,12 +9,12 @@ module.exports = function(app) {
 
     app.get('/:id', function(req, res) {
         var id = req.params.id;
-        db.findChatById(id, function (err, exists, users, messages) {
+        db.findChatById(id, function (err, exists, data) {
             if (err) {
                 console.log("ERROR : ", err);
             } else {
                 if (exists) {
-                    res.render('chat', { title: "Chat #"+id, id: id, users: users, messages: messages });
+                    res.render('chat', { title: "Chat #"+id, id: id, users: data['users'], messages: data['messages'] });
                 } else {
                     res.redirect('/');
                 }

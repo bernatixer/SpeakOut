@@ -27,26 +27,69 @@ Setup
 module.exports.setup = function() {
     r.connect({host: dbConfig.host, port: dbConfig.port }, function (err, connection) {
         assert.ok(err === null, err);
-        r.dbCreate(dbConfig.db).run(connection, function(err, result) {
-            if(err) {
-                logdebug("[DEBUG] RethinkDB database '%s' already exists (%s:%s)\n%s", dbConfig.db, err.name, err.msg, err.message);
-            }
-            else {
-                logdebug("[INFO ] RethinkDB database '%s' created", dbConfig.db);
-            }
+        r.db(dbConfig['db']).tableDrop('chats').run(connection, function(){
+            r.dbCreate(dbConfig.db).run(connection, function(err, result) {
+                if(err) {
+                    logdebug("[DEBUG] RethinkDB database '%s' already exists (%s:%s)\n%s", dbConfig.db, err.name, err.msg, err.message);
+                }
+                else {
+                    logdebug("[INFO ] RethinkDB database '%s' created", dbConfig.db);
+                }
 
-            for(var tbl in dbConfig.tables) {
-                (function (tableName) {
-                    r.db(dbConfig.db).tableCreate(tableName, {primaryKey: dbConfig.tables[tbl]}).run(connection, function(err, result) {
-                        if(err) {
-                            logdebug("[DEBUG] RethinkDB table '%s' already exists (%s:%s)\n%s", tableName, err.name, err.msg, err.message);
-                        }
-                        else {
-                            logdebug("[INFO ] RethinkDB table '%s' created", tableName);
-                        }
-                    });
-                })(tbl);
+                for(var tbl in dbConfig.tables) {
+                    (function (tableName) {
+                        r.db(dbConfig.db).tableCreate(tableName, {primaryKey: dbConfig.tables[tbl]}).run(connection, function(err, result) {
+                            if(err) {
+                                logdebug("[DEBUG] RethinkDB table '%s' already exists (%s:%s)\n%s", tableName, err.name, err.msg, err.message);
+                            }
+                            else {
+                                logdebug("[INFO ] RethinkDB table '%s' created", tableName);
+                            }
+                        });
+                    })(tbl);
+                }
+            });
+        });
+    });
+};
+
+module.exports.createChat = function (hash, private, password) {
+    onConnect(function (err, connection) {
+        r.db(dbConfig['db']).table('chats').insert({
+            "hash": hash,
+            "private": private,
+            "password": password,
+            "users": [],
+            "messages": []
+        }).run(connection, function() {
+            connection.close();
+        });
+    });
+};
+
+module.exports.addUserToRoom = function (id, nick, callback) {
+    onConnect(function (err, connection) {
+        findChatById(id, function(a,b,uuid) {
+            r.db(dbConfig['db']).table('chats').get(uuid['id']).update({ users: r.row('users').append(nick) }).run(connection, function() {
+                callback(uuid);
+                connection.close();
+            });
+        });
+    });
+};
+
+module.exports.removeUserFromRoom = function (id, nick, callback) {
+    onConnect(function (err, connection) {
+        findChatById(id, function(a,b,uuid) {
+            var new_users = uuid['users'];
+            var index = new_users.indexOf(nick);
+            if (index > -1) {
+                new_users.splice(index, 1);
             }
+            r.db(dbConfig['db']).table('chats').get(uuid['id']).update({ users: new_users }).run(connection, function() {
+                callback(new_users);
+                connection.close();
+            });
         });
     });
 };
@@ -73,7 +116,7 @@ module.exports.findChatById = function (id, callback) {
     });
 };
 
-module.exports.findPassword = function (id, callback) {
+function findChatById(id, callback) {
     onConnect(function (err, connection) {
         r.db(dbConfig['db']).table('chats').filter({ hash: id}).limit(1).run(connection, function(err, cursor) {
             if(err) {
@@ -93,31 +136,7 @@ module.exports.findPassword = function (id, callback) {
             }
         });
     });
-};
-
-module.exports.createChat = function (hash, private, password) {
-    onConnect(function (err, connection) {
-        r.db(dbConfig['db']).table('chats').insert({
-            "hash": hash,
-            "private": private,
-            "password": password,
-            "users": [],
-            "messages": []
-        }).run(connection, function() {
-            connection.close();
-        });
-    });
-};
-
-module.exports.addUserToRoom = function (id, socket_id) {
-    onConnect(function (err, connection) {
-        findUUIDById(id, function(uuid) {
-            r.db(dbConfig['db']).table('chats').get(uuid).update({ users: r.row('users').append(socket_id) }).run(connection, function() {
-                connection.close();
-            });
-        });
-    });
-};
+}
 
 function onConnect(callback) {
     r.connect({host: dbConfig.host, port: dbConfig.port }, function(err, connection) {
@@ -126,29 +145,6 @@ function onConnect(callback) {
         callback(err, connection);
     });
 }
-
-function findUUIDById(id, callback) {
-    onConnect(function (err, connection) {
-        r.db(dbConfig['db']).table('chats').filter({ hash: id}).run(connection, function(err, cursor) {
-            if(err) {
-                logerror("[ERROR][%s][findChatById] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
-                return null;
-            } else {
-                cursor.next(function (err, row) {
-                    if(err) {
-                        logerror("[ERROR][%s][findChatById] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
-                        callback(null);
-                        return null; // no user, cursor is empty
-                    } else {
-                        var uuid = row['id'];
-                        callback(uuid);
-                    }
-                    connection.close();
-                });
-            }
-        });
-    });
-};
 
 // #### Connection management
 //

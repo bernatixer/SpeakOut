@@ -27,7 +27,7 @@
 <div id="chat_view" class="hidden row" style="margin: 0px;">
     <div class="col s9 chat-view">
 
-        <div id="msg_view" class="row msg-view" style="margin: 0px; overflow-y: auto; height: 590px;">
+        <div id="msg_view" class="row msg-view" style="margin: 0px; overflow-y: auto; overflow-x: hidden; height: 590px;">
             <table id="chat" class="striped"></table>
         </div>
         <div class="row msg-send" style="margin: 0px;">
@@ -41,13 +41,8 @@
 
     </div>
     <div class="col s3 users-list blue-grey lighten-4">
-        <div class="u-list-header"><h5>Users on this channel (<span id="users-counter">4</span>)</h5></div>
-        <ul class="u-list-body blue-grey lighten-5">
-            <li>Aleix</li>
-            <li>Berni</li>
-            <li>Pol</li>
-            <li>Marti</li>
-        </ul>
+        <div class="u-list-header"><h5>Users on this channel (<span id="users-counter"></span>)</h5></div>
+        <ul id="users_pool" class="u-list-body blue-grey lighten-5"></ul>
         <div class="u-list-footer">
             <div class="fixed-action-btn horizontal" style="bottom: 45px; right: 24px;">
                 <a class="btn-floating btn-large red">
@@ -70,18 +65,27 @@
         $('#choose_nickname').addClass('hidden');
         $('#chat_view').removeClass('hidden');
         set_scroll();
-        socket.emit('nickname', $('#input_text').val(), "<%= id %>");
+        socket.emit('nickname', $('#input_text').val());
         event.preventDefault();
     });
     $( "#input_message_form" ).submit(function( event ) {
-        socket.emit('send_message', $('#input_message').val(), "<%= id %>");
-        $('#chat').append('<tr><td><div class="message-mine">'+ '<p class="msg-from">Me<p>'+ '<p class="msg-body">'+$('#input_message').val()+'</p>'+ '</div></td></tr>');
+        socket.emit('send_message', $('#input_message').val());
+        $('#chat').append('<tr><td><div class="message-mine pull-right">'+ '<p class="msg-from">Me<p>'+ '<p class="msg-body">'+$('#input_message').val()+'</p>'+ '</div></td></tr>');
         $('#input_message').val('');
+        set_scroll();
         event.preventDefault();
     });
     socket.emit('im_here', "<%= id %>");
     socket.on('receive_msg', function(msg, nick){
         $('#chat').append('<tr><td><div class="message">'+ '<p class="msg-from">'+nick+'<p>'+ '<p class="msg-body">'+msg+'</p>'+ '</div></td></tr>');
+        set_scroll();
+    });
+    socket.on('update_users', function(usersPool){
+        $('#users-counter').html(usersPool.length);
+        $('#users_pool').empty();
+        for (var i=0; i<usersPool.length; ++i) {
+            $('#users_pool').append('<li>'+usersPool[i]+'</li>');
+        }
     });
     function set_scroll() {
         $('#msg_view').scrollTop($('#msg_view').prop("scrollHeight"));
